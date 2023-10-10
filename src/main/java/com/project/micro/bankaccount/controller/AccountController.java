@@ -30,6 +30,7 @@ public class AccountController {
 
     @GetMapping("/findById/{id}")
     public Mono<ResponseEntity<AccountResponse>> findById(@PathVariable String id) {
+        System.out.println("findById "+id);
         return iAccountService.findByid(id).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
@@ -43,6 +44,7 @@ public class AccountController {
 
     @PutMapping("/update/{id}")
     public Mono<ResponseEntity<AccountResponse>>update(@PathVariable String id,@RequestBody Mono<AccountRequest> accountRequest ){
+        System.out.println("update "+id);
         return iAccountService.update(id,accountRequest)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());

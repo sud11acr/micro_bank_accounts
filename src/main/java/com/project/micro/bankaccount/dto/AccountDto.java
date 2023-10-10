@@ -3,6 +3,7 @@ package com.project.micro.bankaccount.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -17,6 +18,8 @@ public class AccountDto {
     private String accountType;
     private String numberAccount;
     private BigDecimal balance;
+    private int numberMovements;
     private int limitMovement;
+    private Date fixedTermAccountDate;
 
 }

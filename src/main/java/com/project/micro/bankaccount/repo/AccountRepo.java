@@ -11,5 +11,7 @@ public interface AccountRepo extends ReactiveMongoRepository<Account,String> {
     @Query(value = "{ }, sort = { 'registrationDate' : -1 }, limit = 1")
     Mono<Account> findLatestCustomer();
 
+    Mono<Account> findByIdCustomerAndStatus(String idCustomer,boolean status);
+
 
 }
