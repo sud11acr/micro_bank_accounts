@@ -25,6 +25,8 @@ public class Account {
     private int limitMovement;
     private int numberMovements;
     private Date fixedTermAccountDate;
+    private BigDecimal commission;
+    private int numberFeeFreeTransactions;
     private Date registrationDate;
     private Date modificationDate;
     private Boolean status;

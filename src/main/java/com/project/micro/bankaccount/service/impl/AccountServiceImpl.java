@@ -3,18 +3,13 @@ package com.project.micro.bankaccount.service.impl;
 import com.project.micro.bankaccount.exception.ErrorException;
 import com.project.micro.bankaccount.integration.AccountRequest;
 import com.project.micro.bankaccount.integration.AccountResponse;
-import com.project.micro.bankaccount.mapper.AccountMapper;
 import com.project.micro.bankaccount.model.Account;
+import com.project.micro.bankaccount.proxy.service.ICreditCardProxyService;
 import com.project.micro.bankaccount.repo.AccountRepo;
 import com.project.micro.bankaccount.service.IAccountService;
 import com.project.micro.bankaccount.utils.Constants;
-import lombok.extern.log4j.Log4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -33,6 +28,9 @@ public class AccountServiceImpl implements IAccountService {
     @Autowired
     private AccountRepo repo;
 
+    @Autowired
+    private ICreditCardProxyService proxy;
+
     @Override
     public Mono<AccountResponse> save(Mono<AccountRequest> accountRequest) {
 
@@ -40,6 +38,10 @@ public class AccountServiceImpl implements IAccountService {
             return validateAccountCustomerType(accountReq.getIdCustomer(),accountReq.getCustomerType(),accountReq.getAccountType()).
                     flatMap(valid->{
                         if(valid){
+
+                            Mono<AccountRequest> MINIMUN_BALANCE = getAccountRequestMono(accountReq);
+                            if (MINIMUN_BALANCE != null) return MINIMUN_BALANCE;
+
                             return Mono.just(accountReq);
                         }else{
                             return Mono.error(new ErrorException("Accion no permitida"));
@@ -59,11 +61,17 @@ public class AccountServiceImpl implements IAccountService {
 
     }
 
+    private static Mono<AccountRequest> getAccountRequestMono(AccountRequest accountReq) {
+        if(accountReq.getAccountType().equals(Constants.PERSONAL_CUSTOMER_ACCOUNT_VIP)&&(accountReq.getBalance().compareTo(Constants.MINIMUN_BALANCE)==-1)){
+            return Mono.error(new ErrorException("Accion no permitida valor debe ser mayor o igual a: " + Constants.MINIMUN_BALANCE));
+        }
+        return null;
+    }
+
     @Override
     public Mono<AccountResponse> update(String id,Mono<AccountRequest> accountRequest) {
         Mono<Account> monoBody = accountRequest.map(p->
         {
-            System.out.println("request "+p.toString());
             return toAccountModelReq(p);
         });
         Mono<Account> monoBD = repo.findById(id);
@@ -88,8 +96,13 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public Mono<AccountResponse> findByid(String id) {
+    public Mono<AccountResponse> findById(String id) {
         return repo.findById(id).map(p->toAccountModelRes(p));
+    }
+
+    @Override
+    public Flux<AccountResponse> findIdCustomerBetweenDate(String idCustomer, Date initial, Date last) {
+        return repo.findByIdCustomerAndModificationDateBetween(idCustomer,initial,last).map(p->toAccountModelRes(p));
     }
 
     @Override
@@ -111,11 +124,31 @@ public class AccountServiceImpl implements IAccountService {
 
     public Mono<Boolean> validateAccountCustomerType(String idCustomer,String customerType,String accountType){
         return Constants.PERSONAL_CUSTOMER.equals(customerType)?
-                repo.findByIdCustomerAndStatus(idCustomer,Constants.ACCOUNT_ACTIVE).
-                        map(personal->false).
-                        defaultIfEmpty(true):
-                Mono.just(Constants.CURRENT_ACCOUNT.equals(accountType));
+                repo.findByIdCustomerAndStatus(idCustomer,Constants.ACCOUNT_ACTIVE)
+                        .map(personal->false)
+                        .defaultIfEmpty(true)
+                        .flatMap(valid->{
+                            if(valid&&accountType.equals(Constants.PERSONAL_CUSTOMER_ACCOUNT_VIP)){
+                                return validatedCreditCardCustomer(idCustomer);
+                            }else {
+                                return Mono.just(valid);
+                            }
 
+                        }): validatedAccountBusinessCustomer(idCustomer, accountType);
+
+
+    }
+
+    private Mono<Boolean> validatedAccountBusinessCustomer(String idCustomer, String accountType) {
+        return Constants.BUSINESS_CUSTOMER_ACCOUNT_PYME.equals(accountType) ?
+                validatedCreditCardCustomer(idCustomer) :
+                Mono.just(Constants.CURRENT_ACCOUNT.equals(accountType));
+    }
+
+    private Mono<Boolean> validatedCreditCardCustomer(String idCustomer) {
+        return proxy.findByIdCustomer(idCustomer)
+                .map(credit -> true)
+                .defaultIfEmpty(false);
     }
 
 

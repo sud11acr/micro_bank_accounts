@@ -21,5 +21,7 @@ public class AccountDto {
     private int numberMovements;
     private int limitMovement;
     private Date fixedTermAccountDate;
+    private BigDecimal commission;
+    private int numberFeeFreeTransactions;
 
 }
