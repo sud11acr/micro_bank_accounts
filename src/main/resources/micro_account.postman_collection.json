@@ -1,0 +1,148 @@
+{
+	"info": {
+		"_postman_id": "ff1437a0-0336-4b5c-bcf6-629d77b81840",
+		"name": "micro_account",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10392878"
+	},
+	"item": [
+		{
+			"name": "localhost:8083/account/create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idCustomer\":\"6520691b977bc9752d69d971\",\r\n    \"accountType\":\"2\",\r\n    \"customerType\":\"1\",\r\n    \"balance\": \"4000\",\r\n    \"limitMovement\": \"1\",\r\n    \"numberAccount\":\"001-00524455-88\",\r\n    \"fixedTermAccountDate\": \"2023-10-06T10:00:00Z\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8083/account/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"account",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8083/account/findAll",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8083/account/findAll",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"account",
+						"findAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8083/account/findById/6511eb4fd0ea3e2c9f72341e",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8083/account/findById/65206acc8d608960f518f9a8",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"account",
+						"findById",
+						"65206acc8d608960f518f9a8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8083/account/delete/6511eb4fd0ea3e2c9f72341e",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8083/account/delete/6511eb4fd0ea3e2c9f72341e",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"account",
+						"delete",
+						"6511eb4fd0ea3e2c9f72341e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8083/account/update/6511ef9290ccae57ab53e1e7",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"idCustomer\":\"651af659dcb8217235e9953d\",\r\n    \"accountType\":\"1\",\r\n    \"balance\": \"2000\",\r\n    \"limitMovement\": \"3\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8083/account/update/651f282aed481a209a72b263",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"account",
+						"update",
+						"651f282aed481a209a72b263"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8083/account/findIdCustomerDateBetween/6520474108c24c6b10fb0496/2023-10-01/2023-10-30",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8083/account/findIdCustomerDateBetween/6520474108c24c6b10fb0496/2023-10-01/2023-10-30",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"account",
+						"findIdCustomerDateBetween",
+						"6520474108c24c6b10fb0496",
+						"2023-10-01",
+						"2023-10-30"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
